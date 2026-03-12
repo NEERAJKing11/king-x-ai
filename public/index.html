@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KING X.AI - Neeraj King का AI चैटबॉट</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-crown"></i>
+                    <span>KING X.AI</span>
+                </div>
+                <p class="byline">Neeraj King द्वारा बनाया गया</p>
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i> नई चैट
+                </button>
+            </div>
+            <div class="chats-list" id="chatsList">
+                <div class="loading">चैट लोड हो रही हैं...</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Screen -->
+            <div class="welcome-screen active" id="welcomeScreen">
+                <div class="welcome-content">
+                    <div class="ai-logo">
+                        <i class="fas fa-brain-circuit"></i>
+                    </div>
+                    <h1>KING X.AI में आपका स्वागत!</h1>
+                    <p>Neeraj King का सबसे Powerful AI चैटबॉट</p>
+                    <div class="name-input-container">
+                        <input type="text" id="userNameInput" placeholder="आपका नाम बताइए..." maxlength="20">
+                        <button id="startChatBtn">शुरू करें <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Screen -->
+            <div class="chat-screen" id="chatScreen" style="display: none;">
+                <div class="chat-header">
+                    <button class="back-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-title" id="chatTitle">नई चैट</div>
+                    <div class="chat-actions">
+                        <button class="delete-btn" id="deleteBtn" title="चैट हटाएं">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="messages-container" id="messagesContainer"></div>
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea id="messageInput" placeholder="यहाँ अपना सवाल लिखें... (Enter से भेजें)" rows="1"></textarea>
+                        <button id="sendBtn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
