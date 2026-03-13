@@ -1,77 +1,27 @@
-class NeerajAI {
+class NeerajAIChat {
     constructor() {
-        this.currentChatId = 'main-chat-' + Date.now();
+        this.currentChatId = 'chat-' + Date.now();
         this.init();
     }
 
     init() {
-        this.messagesContainer = document.getElementById('messages');
+        // Elements
+        this.sidebar = document.getElementById('sidebar');
+        this.menuBtn = document.getElementById('menuBtn');
+        this.newChatBtn = document.getElementById('newChat');
+        this.messages = document.getElementById('messages');
         this.input = document.getElementById('messageInput');
         this.sendBtn = document.getElementById('sendBtn');
-        this.sidebar = document.getElementById('sidebar');
-        this.menuToggle = document.getElementById('menuToggle');
-        this.newChatBtn = document.getElementById('newChat');
 
-        // Event Listeners
-        this.sendBtn.addEventListener('click', () => this.sendMessage());
-        this.input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
-        
-        this.menuToggle.addEventListener('click', () => this.toggleSidebar());
-        this.newChatBtn.addEventListener('click', () => this.newChat());
+        // Events
+        this.menuBtn.onclick = () => this.toggleSidebar();
+        this.newChatBtn.onclick = () => this.newChat();
+        this.sendBtn.onclick = () => this.sendMessage();
+        this.input.onkeypress = (e) => {
+            if (e.key === 'Enter') this.sendMessage();
+        };
 
-        // Auto-focus input
         this.input.focus();
-    }
-
-    async sendMessage() {
-        const message = this.input.value.trim();
-        if (!message) return;
-
-        // User message
-        this.addMessage('user', message);
-        this.input.value = '';
-        this.sendBtn.disabled = true;
-
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    userId: this.currentChatId, 
-                    message 
-                })
-            });
-
-            if (!response.ok) throw new Error('API Error');
-
-            const data = await response.json();
-            this.addMessage('ai', data.reply);
-        } catch (error) {
-            this.addMessage('ai', `❌ Error: ${error.message}`);
-        } finally {
-            this.sendBtn.disabled = false;
-            this.input.focus();
-        }
-    }
-
-    addMessage(role, content) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${role}`;
-        messageDiv.innerHTML = `<div class="bubble">${this.escapeHtml(content)}</div>`;
-        
-        this.messagesContainer.appendChild(messageDiv);
-        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     toggleSidebar() {
@@ -80,11 +30,48 @@ class NeerajAI {
 
     newChat() {
         this.currentChatId = 'chat-' + Date.now();
-        this.messagesContainer.innerHTML = '';
+        this.messages.innerHTML = '';
         this.input.focus();
         this.sidebar.classList.remove('open');
     }
+
+    async sendMessage() {
+        const message = this.input.value.trim();
+        if (!message) return;
+
+        this.addMessage('user', message);
+        this.input.value = '';
+        this.sendBtn.disabled = true;
+
+        try {
+            const response = await fetch(`/api/chats/${this.currentChatId}/message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            if (data.messages) {
+                const lastMsg = data.messages[data.messages.length - 1];
+                if (lastMsg.role === 'assistant') {
+                    this.addMessage('ai', lastMsg.content);
+                }
+            }
+        } catch (error) {
+            this.addMessage('ai', 'कुछ technical problem है। Refresh करें!');
+        } finally {
+            this.sendBtn.disabled = false;
+            this.input.focus();
+        }
+    }
+
+    addMessage(role, content) {
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        div.innerHTML = `<div class="bubble">${content}</div>`;
+        this.messages.appendChild(div);
+        this.messages.scrollTop = this.messages.scrollHeight;
+    }
 }
 
-// Initialize Pro Chatbot
-new NeerajAI();
+new NeerajAIChat();
