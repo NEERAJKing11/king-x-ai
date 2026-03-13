@@ -1,54 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neeraj King AI - सबसे Powerful Chatbot</title>
+    <title>Neeraj King AI - सबसे तेज AI चैटबॉट</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- 🎨 COLORFUL SIDEBAR with LOGO -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <img src="https://image2url.com/r2/default/images/1773386857664-a48d1a84-baad-4462-ac43-52b88b9131f3.png" 
-                     alt="Neeraj Logo" class="logo">
-                <div class="logo-text">
-                    <h2>Neeraj King</h2>
-                    <p>AI Assistant</p>
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-circle">
+                    <i class="fas fa-crown"></i>
                 </div>
+                <h2>Neeraj King AI</h2>
             </div>
-            <button class="new-chat-btn" id="newChat">
-                ➕ नया चैट
+            <button id="new-chat-btn" class="new-chat-btn">
+                <i class="fas fa-plus"></i> नया चैट
             </button>
-            <div class="chat-list" id="chatList"></div>
+        </div>
+        <div id="chats-list" class="chats-list">
+            <!-- Chats will load here -->
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="main-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Chat Header -->
+        <div id="chat-header" class="chat-header" style="display: none;">
+            <i class="fas fa-arrow-left back-btn" id="back-btn"></i>
+            <div class="chat-title">
+                <h3 id="chat-title">Neeraj King AI</h3>
+                <span id="chat-date"></span>
+            </div>
         </div>
 
-        <!-- 💎 MAIN CHAT -->
-        <div class="main-chat">
-            <header class="chat-header">
-                <button class="menu-btn" id="menuBtn">☰</button>
-                <div class="header-title">
-                    <span>Neeraj AI Assistant</span>
-                    <div class="status-dot"></div>
+        <!-- Messages Container -->
+        <div id="messages-container" class="messages-container">
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <i class="fas fa-rocket"></i>
                 </div>
-            </header>
+                <h1>Neeraj King AI से बात करो!</h1>
+                <p>कोई भी सवाल पूछो, तुरंत जवाब मिलेगा 🚀</p>
+            </div>
+        </div>
 
-            <div class="messages" id="messages"></div>
-
-            <div class="input-area">
-                <div class="input-wrapper">
-                    <input type="text" id="messageInput" placeholder="यहाँ मैसेज लिखें..." />
-                    <button id="sendBtn">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                        </svg>
-                    </button>
-                </div>
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input type="text" id="message-input" placeholder="यहाँ मैसेज लिखो... (Ctrl+Enter)" maxlength="2000">
+                <button id="send-btn" class="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
