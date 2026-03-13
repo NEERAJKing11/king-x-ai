@@ -1,75 +1,53 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KING X.AI - Neeraj King का AI चैटबॉट</title>
+    <title>Neeraj AI - Powerful Chatbot</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Premium Sidebar with Logo -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-crown"></i>
-                    <span>KING X.AI</span>
-                </div>
-                <p class="byline">Neeraj King द्वारा बनाया गया</p>
-                <button class="new-chat-btn" id="newChatBtn">
-                    <i class="fas fa-plus"></i> नई चैट
-                </button>
+            <div class="sidebar-top">
+                <img src="https://image2url.com/r2/default/images/1773386857664-a48d1a84-baad-4462-ac43-52b88b9131f3.png" 
+                     alt="Neeraj Logo" class="sidebar-logo">
+                <h2>Neeraj AI</h2>
             </div>
-            <div class="chats-list" id="chatsList">
-                <div class="loading">चैट लोड हो रही हैं...</div>
+            <div class="new-chat-btn" id="newChat">
+                <span>+</span> New Chat
             </div>
+            <div id="chatList" class="chat-list"></div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Welcome Screen -->
-            <div class="welcome-screen active" id="welcomeScreen">
-                <div class="welcome-content">
-                    <div class="ai-logo">
-                        <i class="fas fa-brain-circuit"></i>
-                    </div>
-                    <h1>KING X.AI में आपका स्वागत!</h1>
-                    <p>Neeraj King का सबसे Powerful AI चैटबॉट</p>
-                    <div class="name-input-container">
-                        <input type="text" id="userNameInput" placeholder="आपका नाम बताइए..." maxlength="20">
-                        <button id="startChatBtn">शुरू करें <i class="fas fa-arrow-right"></i></button>
-                    </div>
+        <!-- Main Chat Area -->
+        <div class="main-chat">
+            <!-- Premium Header -->
+            <div class="chat-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <div class="chat-title">Neeraj AI Assistant</div>
                 </div>
             </div>
 
-            <!-- Chat Screen -->
-            <div class="chat-screen" id="chatScreen" style="display: none;">
-                <div class="chat-header">
-                    <button class="back-btn" id="backBtn">
-                        <i class="fas fa-arrow-left"></i>
+            <!-- Messages Container -->
+            <div id="messages" class="messages-container"></div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="messageInput" placeholder="Message Neeraj AI..." />
+                    <button id="sendBtn" onclick="sendMessage()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="currentColor"/>
+                        </svg>
                     </button>
-                    <div class="chat-title" id="chatTitle">नई चैट</div>
-                    <div class="chat-actions">
-                        <button class="delete-btn" id="deleteBtn" title="चैट हटाएं">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="messages-container" id="messagesContainer"></div>
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <textarea id="messageInput" placeholder="यहाँ अपना सवाल लिखें... (Enter से भेजें)" rows="1"></textarea>
-                        <button id="sendBtn" disabled>
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
