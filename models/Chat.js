@@ -7,8 +7,8 @@ const messageSchema = new mongoose.Schema({
 });
 
 const chatSchema = new mongoose.Schema({
-  userName: { type: String, required: true },
-  title: { type: String, default: 'नई चैट' },
+  userName: { type: String, default: 'Guest' },
+  title: { type: String, default: 'नया चैट' },
   messages: [messageSchema],
   createdAt: { type: Date, default: Date.now }
 });
