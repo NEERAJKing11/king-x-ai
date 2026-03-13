@@ -3,45 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neeraj AI - Powerful Chatbot</title>
+    <title>Neeraj King AI - सबसे Powerful Chatbot</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <!-- Premium Sidebar with Logo -->
+        <!-- 🎨 COLORFUL SIDEBAR with LOGO -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-top">
+            <div class="sidebar-header">
                 <img src="https://image2url.com/r2/default/images/1773386857664-a48d1a84-baad-4462-ac43-52b88b9131f3.png" 
-                     alt="Neeraj Logo" class="sidebar-logo">
-                <h2>Neeraj AI</h2>
-            </div>
-            <div class="new-chat-btn" id="newChat">
-                <span>+</span> New Chat
-            </div>
-            <div id="chatList" class="chat-list"></div>
-        </div>
-
-        <!-- Main Chat Area -->
-        <div class="main-chat">
-            <!-- Premium Header -->
-            <div class="chat-header">
-                <div class="header-left">
-                    <button class="menu-toggle" id="menuToggle">☰</button>
-                    <div class="chat-title">Neeraj AI Assistant</div>
+                     alt="Neeraj Logo" class="logo">
+                <div class="logo-text">
+                    <h2>Neeraj King</h2>
+                    <p>AI Assistant</p>
                 </div>
             </div>
+            <button class="new-chat-btn" id="newChat">
+                ➕ नया चैट
+            </button>
+            <div class="chat-list" id="chatList"></div>
+        </div>
 
-            <!-- Messages Container -->
-            <div id="messages" class="messages-container"></div>
+        <!-- 💎 MAIN CHAT -->
+        <div class="main-chat">
+            <header class="chat-header">
+                <button class="menu-btn" id="menuBtn">☰</button>
+                <div class="header-title">
+                    <span>Neeraj AI Assistant</span>
+                    <div class="status-dot"></div>
+                </div>
+            </header>
 
-            <!-- Input Area -->
-            <div class="input-container">
+            <div class="messages" id="messages"></div>
+
+            <div class="input-area">
                 <div class="input-wrapper">
-                    <input type="text" id="messageInput" placeholder="Message Neeraj AI..." />
-                    <button id="sendBtn" onclick="sendMessage()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="currentColor"/>
+                    <input type="text" id="messageInput" placeholder="यहाँ मैसेज लिखें..." />
+                    <button id="sendBtn">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                         </svg>
                     </button>
                 </div>
