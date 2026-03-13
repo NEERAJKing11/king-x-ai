@@ -1,6 +1,11 @@
 class NeerajKingAI {
     constructor() {
         this.currentChatId = null;
+        this.initElements();
+        this.init();
+    }
+
+    initElements() {
         this.sidebar = document.getElementById('sidebar');
         this.messagesContainer = document.getElementById('messages-container');
         this.messageInput = document.getElementById('message-input');
@@ -12,50 +17,81 @@ class NeerajKingAI {
         this.chatDate = document.getElementById('chat-date');
         this.mobileMenuBtn = document.getElementById('mobile-menu-btn');
         this.backBtn = document.getElementById('back-btn');
-
-        this.init();
     }
 
     init() {
-        // Event Listeners
+        this.attachEventListeners();
+        this.loadChats();
+        console.log('🚀 Neeraj King AI Initialized!');
+    }
+
+    attachEventListeners() {
         this.sendBtn.addEventListener('click', () => this.sendMessage());
         this.messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) this.sendMessage();
-            if (e.key === 'Enter') this.messageInput.style.height = 'auto';
         });
         this.newChatBtn.addEventListener('click', () => this.createNewChat());
-        this.mobileMenuBtn.addEventListener('click', () => this.toggleSidebar());
-        this.backBtn.addEventListener('click', () => this.showChatsList());
-
-        // Auto-resize textarea
-        this.messageInput.addEventListener('input', () => {
-            this.messageInput.style.height = 'auto';
-            this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+        this.mobileMenuBtn?.addEventListener('click', () => this.toggleSidebar());
+        this.backBtn?.addEventListener('click', () => this.showChatsList());
+        
+        this.messageInput.addEventListener('input', (e) => {
+            e.target.style.height = 'auto';
+            e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
         });
-
-        // Load chats on start
-        this.loadChats();
     }
 
+    // 🔥 FIXED API CALL - Proxy + Error Handling
     async apiCall(endpoint, options = {}) {
         try {
-            const response = await fetch(`/api${endpoint}`, {
+            console.log('🔄 API Call:', endpoint, options.body);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+            const response = await fetch(`${window.location.origin}${endpoint}`, {
                 method: options.method || 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                body: options.body ? JSON.stringify(options.body) : null
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: options.body ? JSON.stringify(options.body) : null,
+                signal: controller.signal
             });
-            return await response.json();
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('✅ API Success:', endpoint, data);
+            return data;
+
         } catch (error) {
-            console.error('API Error:', error);
-            this.showError('नेटवर्क एरर! इंटरनेट चेक करो');
+            console.error('❌ API Error Details:', error);
+            
+            if (error.name === 'AbortError') {
+                this.showError('⏰ Request Timeout! थोड़ी देर बाद ट्राई करो');
+            } else if (error.message.includes('Failed to fetch')) {
+                this.showError('🌐 Server Down! पेज refresh करो');
+            } else {
+                this.showError('⚠️ कुछ गलत हुआ! Developer Tools (F12) check करो');
+            }
+            throw error;
         }
     }
 
     async loadChats() {
-        const chats = await this.apiCall('/chats');
-        if (chats && chats.length > 0) {
-            this.renderChatsList(chats);
-            this.loadChat(chats[0]._id); // Load first chat
+        try {
+            const chats = await this.apiCall('/api/chats');
+            this.renderChatsList(chats || []);
+            if (chats?.length > 0) {
+                this.loadChat(chats[0]._id);
+            }
+        } catch (error) {
+            console.error('Load Chats Error:', error);
+            this.showWelcomeMessage();
         }
     }
 
@@ -66,60 +102,68 @@ class NeerajKingAI {
             chatItem.className = 'chat-item';
             chatItem.innerHTML = `
                 <div class="chat-item-title">${chat.title}</div>
-                <div class="chat-item-preview">${chat.messages[chat.messages.length - 1]?.content?.substring(0, 50) || 'कोई मैसेज नहीं'}...</div>
+                <div class="chat-item-preview">${this.getPreview(chat.messages)}</div>
             `;
             chatItem.addEventListener('click', () => this.loadChat(chat._id));
             this.chatsList.appendChild(chatItem);
         });
     }
 
-    async createNewChat() {
-        const chatData = { userName: 'Neeraj King User' };
-        const newChat = await this.apiCall('/chats', {
-            method: 'POST',
-            body: chatData
-        });
+    getPreview(messages) {
+        const lastMsg = messages[messages.length - 1];
+        return lastMsg ? lastMsg.content.substring(0, 50) + '...' : 'नया चैट';
+    }
 
-        if (newChat) {
-            this.currentChatId = newChat._id;
-            this.loadChats();
-            this.showChatArea();
-            this.clearMessages();
-            this.scrollToBottom();
+    async createNewChat() {
+        try {
+            const newChat = await this.apiCall('/api/chats', {
+                method: 'POST',
+                body: { userName: 'Neeraj King User' }
+            });
+            
+            if (newChat) {
+                this.currentChatId = newChat._id;
+                await this.loadChats();
+                this.showChatArea();
+                this.clearMessages();
+            }
+        } catch (error) {
+            this.showError('नया चैट बनाने में समस्या!');
         }
     }
 
     async loadChat(chatId) {
-        this.currentChatId = chatId;
-        const chat = await this.apiCall(`/chats/${chatId}`);
-        
-        if (chat) {
+        try {
+            this.currentChatId = chatId;
+            const chat = await this.apiCall(`/api/chats/${chatId}`);
+            
             this.renderMessages(chat.messages);
             this.updateChatHeader(chat.title, chat.createdAt);
             this.showChatArea();
             this.scrollToBottom();
             
-            // Update active chat
-            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`[onclick="kingAI.loadChat('${chatId}')"]`)?.classList.add('active');
+            // Active chat highlight
+            document.querySelectorAll('.chat-item').forEach(item => 
+                item.classList.toggle('active', item.onclick?.toString().includes(chatId))
+            );
+        } catch (error) {
+            this.showError('चैट लोड नहीं हो सका!');
         }
     }
 
     renderMessages(messages) {
         this.messagesContainer.innerHTML = '';
-        messages.forEach(message => {
-            this.addMessage(message.role, message.content, message.timestamp);
-        });
+        messages.forEach(msg => this.addMessage(msg.role, msg.content, msg.timestamp));
     }
 
     addMessage(role, content, timestamp = new Date()) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${role}`;
-        messageDiv.innerHTML = `
-            <div class="message-content">${this.formatMessage(content)}</div>
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        div.innerHTML = `
+            <div class="message-content">${this.escapeHtml(content).replace(/\n/g, '<br>')}</div>
             <div class="message-time">${this.formatTime(timestamp)}</div>
         `;
-        this.messagesContainer.appendChild(messageDiv);
+        this.messagesContainer.appendChild(div);
         this.scrollToBottom();
     }
 
@@ -127,108 +171,99 @@ class NeerajKingAI {
         const message = this.messageInput.value.trim();
         if (!message || !this.currentChatId) return;
 
-        // Disable send button
+        // UI Update
         this.sendBtn.disabled = true;
         this.sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-        // Add user message
-        this.addMessage('user', message);
-        const inputValue = this.messageInput.value;
         this.messageInput.value = '';
 
+        // User message
+        this.addMessage('user', message);
+
         try {
-            // Send to AI
-            const chat = await this.apiCall(`/chats/${this.currentChatId}/message`, {
+            const chat = await this.apiCall(`/api/chats/${this.currentChatId}/message`, {
                 method: 'POST',
                 body: { message }
             });
 
-            if (chat) {
-                // Add AI response
-                const lastMessage = chat.messages[chat.messages.length - 1];
-                if (lastMessage.role === 'assistant') {
-                    this.addMessage('assistant', lastMessage.content, lastMessage.timestamp);
-                }
-                this.updateChatHeader(chat.title);
+            // AI Response
+            const aiMsg = chat.messages[chat.messages.length - 1];
+            if (aiMsg.role === 'assistant') {
+                this.addMessage('assistant', aiMsg.content, aiMsg.timestamp);
             }
+
+            this.updateChatHeader(chat.title);
         } catch (error) {
-            this.addMessage('assistant', '❌ माफ़ कीजिए, अभी जवाब नहीं दे पा रहा। थोड़ी देर बाद ट्राई करो!');
+            this.addMessage('assistant', '🤖 माफ़ कीजिए, अभी जवाब नहीं दे पा रहा। थोड़ी देर बाद ट्राई करो!');
         } finally {
-            // Re-enable send button
             this.sendBtn.disabled = false;
             this.sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
         }
     }
 
-    updateChatHeader(title, createdAt = null) {
-        this.chatTitle.textContent = title;
-        if (createdAt) {
-            this.chatDate.textContent = `शुरू: ${this.formatDate(new Date(createdAt))}`;
-        }
-    }
-
+    // UI Methods
     showChatArea() {
         this.chatHeader.style.display = 'flex';
-        this.messagesContainer.classList.remove('welcome');
+        this.messagesContainer.innerHTML = ''; // Clear welcome
     }
 
-    showChatsList() {
-        this.chatHeader.style.display = 'none';
-        this.sidebar.classList.remove('hidden', 'mobile-open');
-    }
-
-    clearMessages() {
+    showWelcomeMessage() {
         this.messagesContainer.innerHTML = `
             <div class="welcome-message">
-                <div class="welcome-icon"><i class="fas fa-comments"></i></div>
-                <h1>नया चैट शुरू!</h1>
-                <p>अपना पहला मैसेज लिखो...</p>
+                <div class="welcome-icon"><i class="fas fa-rocket"></i></div>
+                <h1>Neeraj King AI से बात करो!</h1>
+                <p><strong>नया चैट</strong> बटन दबाओ या F12 Console चेक करो</p>
             </div>
         `;
     }
 
+    clearMessages() {
+        this.showWelcomeMessage();
+    }
+
+    updateChatHeader(title, createdAt) {
+        this.chatTitle.textContent = title;
+        this.chatDate.textContent = createdAt ? 
+            `शुरू: ${this.formatDate(new Date(createdAt))}` : '';
+    }
+
     toggleSidebar() {
-        this.sidebar.classList.toggle('mobile-open');
         this.sidebar.classList.toggle('hidden');
+        this.sidebar.classList.toggle('mobile-open');
+    }
+
+    showChatsList() {
+        this.chatHeader.style.display = 'none';
+        this.toggleSidebar();
     }
 
     scrollToBottom() {
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
     }
 
-    formatMessage(content) {
-        return content
-            .replace(/\n/g, '<br>')
-            .replace(/`(.*?)`/g, '<code>$1</code>')
-            .replace(/`(.*)/g, '<code>$1</code>');
+    // Utilities
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     formatTime(date) {
-        return new Date(date).toLocaleTimeString('hi-IN', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        return new Date(date).toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' });
     }
 
     formatDate(date) {
-        return new Date(date).toLocaleDateString('hi-IN', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
+        return new Date(date).toLocaleDateString('hi-IN');
     }
 
     showError(message) {
-        this.addMessage('assistant', `❌ ${message}`);
+        console.error('❌ Error:', message);
+        this.addMessage('assistant', message);
     }
 }
 
-// Initialize when DOM is loaded
+// 🔥 Global Initialize
+let kingAI;
 document.addEventListener('DOMContentLoaded', () => {
-    window.kingAI = new NeerajKingAI();
-    
-    // PWA Support
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
-    }
+    kingAI = new NeerajKingAI();
+    console.log('🌐 Website Loaded: http://localhost:3000');
 });
